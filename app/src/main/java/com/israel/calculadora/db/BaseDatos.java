@@ -48,12 +48,14 @@ public class BaseDatos extends SQLiteOpenHelper {
         String sQuery = "SELECT nota, detalle FROM notas ORDER BY nota desc LIMIT " +iTotal;
         //almacenamos el resultado de la query
         Cursor cursor = db.rawQuery(sQuery,null);
-
+        //[{7,"nota 1"},{4, "nota 2"}]
         //recorrer el resultado de la query
         while(cursor.moveToNext()){
             //agregar al Vector
-            resultado.add(cursor.getFloat(0)+ " "+cursor.getString(1));
+            resultado.add(cursor.getFloat(0)+ ", "+cursor.getString(1));
         }
+
+        //[{ "7 nota 1"},{"4 nota 2"}]
         //cerramos el cursor y la conexion
         cursor.close();
         db.close();
