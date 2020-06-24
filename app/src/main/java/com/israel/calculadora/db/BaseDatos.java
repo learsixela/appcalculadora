@@ -45,7 +45,7 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         //crear variable para ejecutar query
         SQLiteDatabase db = getReadableDatabase();
-        String sQuery = "SELECT nota, detalle FROM notas ORDER BY nota desc LIMIT " +iTotal;
+        String sQuery = "SELECT nota, detalle FROM notas ORDER BY nota desc LIMIT " + iTotal;
         //almacenamos el resultado de la query
         Cursor cursor = db.rawQuery(sQuery,null);
         //[{7,"nota 1"},{4, "nota 2"}]

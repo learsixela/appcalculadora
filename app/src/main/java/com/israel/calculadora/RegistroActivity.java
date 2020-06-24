@@ -59,6 +59,9 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
             //llamado a la funcion, pasando parametros
             guardarNotas( fNota,  sDescripcion);
 
+            //llamado a la funcion limpiar los campos
+            limpiarCampos();
+
             sMensaje =  "Registro completo";
             mensajes(sMensaje);
         }
@@ -68,29 +71,39 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 
+    public void limpiarCampos(){
+        eCodigo.setText("");
+        eNota.setText("");
+        eDescripcion.setText("");
+    }
 
     //Método para consultar
     public void Buscar(View view){
-        BaseDatos admin = new BaseDatos(this, "administracion", null, 1);
+        //instancia de la clase qeu hereda de SQLiteOpenHelper, llamando al constructor
+        BaseDatos admin = new BaseDatos(this, "twk", null, 1);
+        //intancia para poder escribir y consuiltar la base de datos
         SQLiteDatabase BaseDeDatabase = admin.getWritableDatabase();
 
-        String codigo = eCodigo.getText().toString();
+        String codigo = eCodigo.getText().toString().trim();
+        String sQuery = "select nota, detalle from notas where id =" + codigo;
 
         if(!codigo.isEmpty()){
             Cursor fila = BaseDeDatabase.rawQuery
-                    ("select descripcion from articulos where codigo =" + codigo, null);
-
+                    (sQuery, null);
+               //solo accedo al primer y unico registro
             if(fila.moveToFirst()){
-                eDescripcion.setText(fila.getString(0));
-                eNota.setText(fila.getString(1));
-                BaseDeDatabase.close();
+                eNota.setText(fila.getString(0));
+                eDescripcion.setText(fila.getString(1));
             } else {
-                Toast.makeText(this,"No existe el registro", Toast.LENGTH_SHORT).show();
-                BaseDeDatabase.close();
+                String sMensaje = "No existe el registro";
+                mensajes(sMensaje);
             }
+            //siempre cerrar la conexion al realizar una consulta, existan datos o no
+            BaseDeDatabase.close();
 
         } else {
-            Toast.makeText(this, "Debes introducir el código", Toast.LENGTH_SHORT).show();
+            String sMensaje = "Debes introducir el código";
+            mensajes(sMensaje);
         }
     }
 
@@ -103,20 +116,19 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         //Poder escribir el la base de datos
         SQLiteDatabase db = adminbd.getWritableDatabase();
 
+        //prueba de insercion directa
+        String sQuery = "INSERT INTO notas VALUES("+ nota +", "+ detalle +")";
+        db.execSQL(sQuery);
+
         //instancia de la clase que almacenara el contenido o variables
         ContentValues registrar = new ContentValues();
         registrar.put("nota",nota);
         registrar.put("detalle",detalle);
 
-        //prueba de insercion directa
-        String sQuery = "INSERT INTO notas VALUES("+ nota +", "+ detalle +")";
-        db.execSQL(sQuery);
-        //db.close();
-
         //insercion con el contenedor
-        db.insert("notas",null,registrar);
+        //db.insert("notas",null,registrar);
 
-
+        db.close();
 
     }
 
