@@ -17,7 +17,8 @@ import com.israel.calculadora.db.BaseDatos;
 
 import java.util.Vector;
 
-public class RegistroActivity extends AppCompatActivity implements NotasInterface {
+public class RegistroActivity extends AppCompatActivity implements NotasInterface
+{
 
     private EditText eNota, eDescripcion, eCodigo;
 
@@ -67,16 +68,6 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         }
     }
 
-    public void mensajes(String mensaje){
-        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
-    }
-
-    public void limpiarCampos(){
-        eCodigo.setText("");
-        eNota.setText("");
-        eDescripcion.setText("");
-    }
-
     //Método para consultar
     public void Buscar(View view){
         //instancia de la clase qeu hereda de SQLiteOpenHelper, llamando al constructor
@@ -107,6 +98,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         }
     }
 
+    //imprementacion por Notas interface
     @Override
     public void guardarNotas(Float nota, String detalle) {
         //instancia de la clase
@@ -128,12 +120,86 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         //insercion con el contenedor
         //db.insert("notas",null,registrar);
 
+        //utilizando el metodo de la clase Base datos
+        adminbd.guardarNotas(nota,detalle);
+
         db.close();
 
     }
 
     @Override
     public Vector<String> consultarNotas(int iTotal) {
+        BaseDatos adminbd = new BaseDatos(this,"twk",null,1);
+        adminbd.consultarNotas(iTotal);
         return null;
     }
+
+    public void Modificar(View view){
+
+        String sMensaje= "";
+        String sCodigo = eCodigo.getText().toString().trim();
+        String sDescripcion = eDescripcion.getText().toString().trim();
+        String sNota = eNota.getText().toString().trim();
+
+        if(sCodigo.isEmpty() && sDescripcion.isEmpty() && sNota.isEmpty()){
+            sMensaje =  "Debe ingresar parametros";
+            mensajes(sMensaje);
+        }else if(sCodigo.isEmpty()){
+            sMensaje =  "Debe ingresar codigo";
+            mensajes(sMensaje);
+        }else if(sDescripcion.isEmpty()){
+            sMensaje =  "Debe ingresar Descripcion";
+            mensajes(sMensaje);
+        }else if(sNota.isEmpty()){
+            sMensaje =  "Debe ingresar Nota";
+            mensajes(sMensaje);
+        }else{
+            //modificar la información
+
+            //convirtiendo String a Float
+            Float fNota = Float.parseFloat(sNota);
+            //llamado a la funcion, pasando parametros
+            ModificarNota( sCodigo, fNota,  sDescripcion);
+            //llamado a la funcion limpiar los campos
+            limpiarCampos();
+
+            sMensaje =  "Modificación completa";
+            mensajes(sMensaje);
+        }
+    }
+
+    public void ModificarNota(String sCodigo,Float fNota ,String sDetalle){
+        BaseDatos admin = new BaseDatos(this, "twk", null, 1);
+        SQLiteDatabase BaseDeDatabase = admin.getWritableDatabase();
+
+        ContentValues contenedor = new ContentValues();
+        contenedor.put("id",sCodigo);
+        contenedor.put("nota",fNota);
+        contenedor.put("detalle",sDetalle);
+
+        String sQWhere = "id="+sCodigo;
+
+        int resultado = BaseDeDatabase.update("notas",contenedor,sQWhere,null);
+        //validar el resultado
+        if(resultado ==1){
+            String sMensaje = "La nota fue modificada correctamente";
+            mensajes(sMensaje);
+        }else{
+            String sMensaje = "Error al realizar la modificación";
+            mensajes(sMensaje);
+        }
+
+        BaseDeDatabase.close();
+    }
+
+    public void mensajes(String mensaje){
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+    }
+
+    public void limpiarCampos(){
+        eCodigo.setText("");
+        eNota.setText("");
+        eDescripcion.setText("");
+    }
+
 }
