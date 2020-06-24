@@ -192,6 +192,41 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         BaseDeDatabase.close();
     }
 
+    public void Eliminar(View view){
+
+        String sCodigo = eCodigo.getText().toString().trim();
+        if(sCodigo.isEmpty()) {
+            String sMensaje = "Debe ingresar codigo";
+            mensajes(sMensaje);
+        }else{
+            //llamado a la funcion  eliminar
+
+            EliminarNota(sCodigo);
+            limpiarCampos();
+
+            String sMensaje =  "Eliminación completa";
+            mensajes(sMensaje);
+        }
+    }
+
+    private void EliminarNota(String sCodigo){
+        BaseDatos admin = new BaseDatos(this, "twk", null, 1);
+        SQLiteDatabase BaseDeDatabase = admin.getWritableDatabase();
+
+        String sQWhere = "id="+sCodigo;
+        int resultado = BaseDeDatabase.delete("notas",sQWhere,null);
+
+        //validar el resultado
+        if(resultado ==1){
+            String sMensaje = "La nota fue Eliminada correctamente";
+            mensajes(sMensaje);
+        }else{
+            String sMensaje = "Error al eliminar la modificación";
+            mensajes(sMensaje);
+        }
+        BaseDeDatabase.close();
+    }
+
     public void mensajes(String mensaje){
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
