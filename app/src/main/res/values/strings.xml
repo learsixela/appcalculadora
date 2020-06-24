@@ -13,7 +13,7 @@
     <string name="string_msg_pass">Ingrese password</string>
     <string name="string_msg_datos">Ingrese datos de acceso</string>
 
-    <string name="string_vacio"></string>
+    <string name="string_vacio"> </string>
 
     <string name="string_cero">0</string>
     <string name="string_uno">1</string>
@@ -43,4 +43,12 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <string name="txt_codigo">Código Nota</string>
+    <string name="txt_descripcion">Descripción nota</string>
+    <string name="txt_nota">Nota</string>
+    <string name="BotonRegistrar">Registrar Nota</string>
+    <string name="BotonBuscar">Buscar Nota</string>
+    <string name="BotonEliminar">Eliminar Nota</string>
+    <string name="BotonModificar">Modificar Nota</string>
 </resources>
