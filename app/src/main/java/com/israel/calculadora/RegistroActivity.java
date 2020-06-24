@@ -111,9 +111,10 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         //prueba de insercion directa
         String sQuery = "INSERT INTO notas VALUES("+ nota +", "+ detalle +")";
         db.execSQL(sQuery);
-        db.close();
+        //db.close();
 
-
+        //insercion con el contenedor
+        db.insert("notas",null,registrar);
 
 
 
