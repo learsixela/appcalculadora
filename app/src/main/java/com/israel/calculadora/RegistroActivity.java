@@ -2,25 +2,40 @@ package com.israel.calculadora;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.israel.calculadora.Interface.NotasInterface;
 import com.israel.calculadora.db.BaseDatos;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Vector;
 
 public class RegistroActivity extends AppCompatActivity implements NotasInterface
 {
 
     private EditText eNota, eDescripcion, eCodigo;
+
+    Button btnJson;
+    TextView txtJson;
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +46,16 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         eDescripcion = (EditText)findViewById(R.id.txt_descripcion);
         eNota = (EditText)findViewById(R.id.txt_nota);
 
+        btnJson=findViewById(R.id.asyncTask);
+
+        btnJson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JsonTask asyncTask=new JsonTask();
+                asyncTask.execute("https://my-json-server.typicode.com/learsixela/json2020/Notas");
+            }
+        });
+
     }
 
     public void Registrar (View vista){
@@ -40,11 +65,8 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
          String sNota = eNota.getText().toString().trim();
 
 //split(), replaceAll(), trim()
-        if(sCodigo.isEmpty() && sDescripcion.isEmpty() && sNota.isEmpty()){ // V^V=V
+        if(sDescripcion.isEmpty() && sNota.isEmpty()){ // V^V=V
             sMensaje =  "Debe ingresar parametros";
-            mensajes(sMensaje);
-        }else if(sCodigo.isEmpty()){
-            sMensaje =  "Debe ingresar codigo";
             mensajes(sMensaje);
         }else if(sDescripcion.isEmpty()){
             sMensaje =  "Debe ingresar Descripcion";
@@ -67,7 +89,6 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
             mensajes(sMensaje);
         }
     }
-
     //Método para consultar
     public void Buscar(View view){
         //instancia de la clase qeu hereda de SQLiteOpenHelper, llamando al constructor
@@ -97,7 +118,6 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
             mensajes(sMensaje);
         }
     }
-
     //imprementacion por Notas interface
     @Override
     public void guardarNotas(Float nota, String detalle) {
@@ -118,15 +138,14 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         registrar.put("detalle",detalle);
 
         //insercion con el contenedor
-        //db.insert("notas",null,registrar);
+        db.insert("notas",null,registrar);
 
         //utilizando el metodo de la clase Base datos
-        adminbd.guardarNotas(nota,detalle);
+        //adminbd.guardarNotas(nota,detalle);
 
         db.close();
 
     }
-
     @Override
     public Vector<String> consultarNotas(int iTotal) {
         BaseDatos adminbd = new BaseDatos(this,"twk",null,1);
@@ -228,13 +247,78 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
     }
 
     public void mensajes(String mensaje){
-        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
     }
-
     public void limpiarCampos(){
         eCodigo.setText("");
         eNota.setText("");
         eDescripcion.setText("");
     }
 
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            pd = new ProgressDialog(RegistroActivity.this);
+            pd.setMessage("Espere por favor...");
+            pd.setIndeterminate(false);
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        protected String doInBackground(String... params) {
+
+            String str="https://my-json-server.typicode.com/learsixela/json2020/Notas";
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                //URL url = new URL(params[0]); // o
+                URL url = new URL(str);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line+"\n");
+                    Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
+                }
+
+                return buffer.toString();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (pd.isShowing()){
+                pd.dismiss();
+            }
+            txtJson.setText(result);
+        }
+    }
 }

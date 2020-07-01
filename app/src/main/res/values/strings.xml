@@ -51,4 +51,5 @@
     <string name="BotonBuscar">Buscar Nota</string>
     <string name="BotonEliminar">Eliminar Nota</string>
     <string name="BotonModificar">Modificar Nota</string>
+    <string name="BotonJson">Leer Json</string>
 </resources>
