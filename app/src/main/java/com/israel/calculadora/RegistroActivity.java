@@ -340,7 +340,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
     }
 
     public void trabajarJson (String resultado)  {
-        Region region = new Region();
+
         ArrayList<Region> listaRegiones = new ArrayList<>();
         //convirtiendo el resultado a JSON
         try {
@@ -349,11 +349,13 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
             //String stringJSON = jsonObject.getString("Region");
 
             JSONArray jsonArray = jsonObject.getJSONArray("Region");
+            JSONObject jsonObjectHijo;
             for (int i = 0; i < jsonArray.length(); i++)
             {
                 try {
+                    Region region = new Region();
                     //al hijo del json por posicion
-                    JSONObject jsonObjectHijo = jsonArray.getJSONObject(i);
+                    jsonObjectHijo = jsonArray.getJSONObject(i);
                     //extraer el nombre y el id, asignando al objeto
                     region.setNombre(jsonObjectHijo.getString("Nombre"));
                     //asignar a string para posteriormente convertirlo a int
