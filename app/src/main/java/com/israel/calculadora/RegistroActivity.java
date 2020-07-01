@@ -18,6 +18,11 @@ import android.widget.Toast;
 
 import com.israel.calculadora.Interface.NotasInterface;
 import com.israel.calculadora.db.BaseDatos;
+import com.israel.calculadora.objetos.Region;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +31,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class RegistroActivity extends AppCompatActivity implements NotasInterface
@@ -47,10 +53,10 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         eNota = (EditText)findViewById(R.id.txt_nota);
 
         btnJson=findViewById(R.id.asyncTask);
-
         btnJson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //intancia de la clase
                 JsonTask asyncTask=new JsonTask();
                 asyncTask.execute("https://my-json-server.typicode.com/learsixela/json2020/Notas");
             }
@@ -255,7 +261,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         eDescripcion.setText("");
     }
 
-
+    //clase para leer json desde url
     private class JsonTask extends AsyncTask<String, String, String> {
 
         protected void onPreExecute() {
@@ -270,13 +276,13 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
 
         protected String doInBackground(String... params) {
 
-            String str="https://my-json-server.typicode.com/learsixela/json2020/Notas";
+            String miurl="https://my-json-server.typicode.com/learsixela/json2020/Notas";
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
             try {
                 //URL url = new URL(params[0]); // o
-                URL url = new URL(str);
+                URL url = new URL(miurl);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
@@ -319,6 +325,26 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
                 pd.dismiss();
             }
             txtJson.setText(result);
+            //llamado a funciones
+            trabajarJson(result);
         }
+    }
+
+    public void trabajarJson (String resultado)  {
+        Region region = new Region();
+        ArrayList<Region> listaRegiones = new ArrayList<>();
+        //convirtiendo el resultado a JSON
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+
+            //JSONArray arrayJSON = jsonObject.getJSONArray("region");
+            String stringJSON = jsonObject.getString("region");
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
