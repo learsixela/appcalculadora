@@ -1,6 +1,9 @@
 package com.israel.calculadora;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -10,12 +13,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.israel.calculadora.Adapter.MyAdapter;
 import com.israel.calculadora.Interface.NotasInterface;
 import com.israel.calculadora.db.BaseDatos;
 import com.israel.calculadora.objetos.Region;
@@ -38,6 +43,9 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
 {
 
     private EditText eNota, eDescripcion, eCodigo;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     Button btnJson;
     TextView txtJson;
@@ -51,6 +59,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         eCodigo = (EditText)findViewById(R.id.txt_codigo);
         eDescripcion = (EditText)findViewById(R.id.txt_descripcion);
         eNota = (EditText)findViewById(R.id.txt_nota);
+        recyclerView = findViewById(R.id.recyclerJSON);
 
         btnJson=findViewById(R.id.asyncTask);
         btnJson.setOnClickListener(new View.OnClickListener() {
@@ -276,7 +285,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
 
         protected String doInBackground(String... params) {
 
-            String miurl="https://my-json-server.typicode.com/learsixela/json2020/Notas";
+            String miurl="https://my-json-server.typicode.com/josedelafuente25/coronajson/db";
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
@@ -294,7 +303,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
-                    Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
+                    //Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
                 }
 
                 return buffer.toString();
@@ -324,7 +333,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
             if (pd.isShowing()){
                 pd.dismiss();
             }
-            txtJson.setText(result);
+            //txtJson.setText(result);
             //llamado a funciones
             trabajarJson(result);
         }
@@ -337,8 +346,31 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         try {
             JSONObject jsonObject = new JSONObject(resultado);
 
-            //JSONArray arrayJSON = jsonObject.getJSONArray("region");
-            String stringJSON = jsonObject.getString("region");
+            //String stringJSON = jsonObject.getString("Region");
+
+            JSONArray jsonArray = jsonObject.getJSONArray("Region");
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                try {
+                    //al hijo del json por posicion
+                    JSONObject jsonObjectHijo = jsonArray.getJSONObject(i);
+                    //extraer el nombre y el id, asignando al objeto
+                    region.setNombre(jsonObjectHijo.getString("Nombre"));
+                    //asignar a string para posteriormente convertirlo a int
+                    String id = jsonObjectHijo.getString("id");
+                    region.setId(Integer.parseInt(id));
+                    listaRegiones.add(region);
+
+                } catch (JSONException e) {
+                    Log.e("Parser JSON", e.toString());
+                }
+            }
+
+            MyAdapter adaptadorRecycler = new MyAdapter(this, listaRegiones);
+            recyclerView.setAdapter(adaptadorRecycler);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
+            recyclerView.addItemDecoration(dividerItemDecoration);
 
 
         } catch (JSONException e) {
