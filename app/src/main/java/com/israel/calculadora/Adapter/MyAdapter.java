@@ -36,6 +36,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.Holder> {
         String sId =  lista.get(i).getId() +"";
         holder.getId().setText(sId);
         holder.getNombre().setText(String.valueOf(lista.get(i).getNombre()));
+        holder.getContagiados().setText(String.valueOf(lista.get(i).getContagiados()));
     }
 
     @Override
@@ -45,12 +46,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.Holder> {
 
     class Holder extends RecyclerView.ViewHolder{
 
-        TextView nombre, id;
+        TextView nombre, id, contagiados;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
             nombre = itemView.findViewById(R.id.nombreItem);
             id = itemView.findViewById(R.id.id);
+            contagiados = itemView.findViewById(R.id.contagiados);
         }
 
         public TextView getNombre() {
@@ -59,6 +61,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.Holder> {
 
         public TextView getId() {
             return id;
+        }
+
+        public TextView getContagiados() {
+            return contagiados;
         }
     }
 }

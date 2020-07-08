@@ -3,22 +3,28 @@
 android:layout_width="match_parent"
 android:layout_height="wrap_content">
 
-<TextView
-    android:id="@+id/nombreItem"
-    android:layout_width="0dp"
-    android:layout_weight="0.5"
-    android:layout_height="match_parent"
-    android:hint="asd"
-    android:gravity="center"
-    />
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:layout_weight="0.3"
+        android:drawableRight="@android:drawable/star_on"
+        android:gravity="center" />
 
-<TextView
-    android:layout_margin="20dp"
-    android:id="@+id/id"
-    android:layout_width="0dp"
-    android:layout_weight="0.3"
-    android:gravity="center"
-    android:layout_height="match_parent"
-    android:drawableRight="@android:drawable/star_on" />
+    <TextView
+        android:id="@+id/nombreItem"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:hint="asd" />
+
+    <TextView
+        android:id="@+id/contagiados"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
 
 </LinearLayout>

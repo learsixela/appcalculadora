@@ -140,7 +140,7 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
         //contexto, nombre bd, factory (null), version bd
         BaseDatos adminbd = new BaseDatos(this,"twk",null,1);
 
-        //Poder escribir el la base de datos
+        //Poder escribir en la base de datos
         SQLiteDatabase db = adminbd.getWritableDatabase();
 
         //prueba de insercion directa
@@ -303,7 +303,6 @@ public class RegistroActivity extends AppCompatActivity implements NotasInterfac
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
-                    //Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
                 }
 
                 return buffer.toString();
